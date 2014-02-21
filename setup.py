@@ -9,19 +9,19 @@ if PY3:
   install_requires = ["six"]
 else:
   install_requires = ["six", "simplejson"]
+
 README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 
-
 setup(
-    name='yandexwebdav',
-    version='0.2.11',
+    name='davpy',
+    version='0.2.12',
     include_package_data=True,
-    py_modules=['yandexwebdav'],
-    url='https://github.com/lexich/yandex-disk-webdav',
+    py_modules=['davpy'],
+    url='https://github.com/dfranganillo/davpy',
     license='MIT',
-    author='lexich',
-    author_email='lexich121@gmail.com',
-    description='Simple wrapper to work with yandex disk using webdav Basic Auth',
+    author='lexich, dfranganillo',
+    author_email='lexich121@gmail.com, dfranganillo@gmail.com',
+    description='Simple wrapper to work with Basic Auth webdavs',
     long_description=README,
     install_requires=install_requires,
     scripts=[
