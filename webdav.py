@@ -17,7 +17,7 @@ if PY3:
 else:
     from urllib import unquote, quote
 
-logger = logging.getLogger("yandexwebdav.py")
+logger = logging.getLogger("DavPy")
 
 TRYINGS = 3
 
