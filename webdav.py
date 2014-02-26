@@ -176,7 +176,7 @@ def checkResponse(response, msg=""):
         raise ConnectionException(response.status, msg)
 
 
-class Config(object):
+class DavPy(object):
     def __init__(self, opts):
         """
         Constructor
