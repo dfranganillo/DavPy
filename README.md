@@ -4,30 +4,44 @@ DavPy
 Simple wrapper to work with Basic Auth webdavs. 
 Compatible python 2.6, 2.7, 3
 
+# Install
+
+> [pip](https://pypi.python.org/pypi/pip/) install [davpy](https://pypi.python.org/pypi/davpy)
+
+Or
+
+> [easy_install](https://pypi.python.org/pypi/setuptools) [davpy](https://pypi.python.org/pypi/davpy)
+
+Or manual way
+
+> python setup.py install
+
 Source code
 
 > [github](https://github.com/dfranganillo/davpy)
 
 # Using API
 ```python
-conf = Config({
-  "user":"<-- username -->",
-  "password":"<-- password -->",
-  "host": "<-- dav host -->"
+davfs = DavPy({
+  "user": username,
+  "password": password,
+  "host": dav host, if empty defaults to webdav.yandex.ru,
+  "retry_limit": if empty defaults to 3
 })
 
 
-conf.list(u"/") # list files and folder in root folder at remote server
 
-conf.sync(u"local folder", u"remote folder for upload files from local folder")
+davfs.list(u"/") # list files and folder in root folder at remote server
 
-conf.mkdir(u"path to remote folder, which you need to create")
+davfs.sync(u"local folder", u"remote folder for upload files from local folder")
 
-conf.download(u"path to remote file which your need to download") #function return file in bytearray
+davfs.mkdir(u"path to remote folder, which you need to create")
 
-conf.downloadTo(u"path to remote file which your need to download", u"local path to save file"):
+davfs.download(u"path to remote file which your need to download") #function return file in bytearray
 
-conf.delete(u"Delete remote file")
+davfs.downloadTo(u"path to remote file which your need to download", u"local path to save file"):
 
-conf.upload(u"path to local file", u"remote path for uploading file")
+davfs.delete(u"Delete remote file")
+
+davfs.upload(u"path to local file", u"remote path for uploading file")
 
