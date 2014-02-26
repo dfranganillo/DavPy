@@ -19,9 +19,6 @@ else:
 
 logger = logging.getLogger("DavPy")
 
-TRYINGS = 3
-
-
 def _encode_utf8(txt):
     if not PY3:
         if type(txt) == unicode:
@@ -188,6 +185,7 @@ class DavPy(object):
         self.host = _encode_utf8(opts.get("host", "webdav.yandex.ru"))
         self.options = opts
         self.limit = opts.get("limit", 4)
+        self.tryings = max(1, opts.get("retry_limit",3))
 
     def getHeaders(self):
         """
@@ -214,7 +212,7 @@ class DavPy(object):
         :param href: remote folder
         :return: list(folders, files) and list(None,None) if folder doesn't exist
         """
-        for iTry in range(TRYINGS):
+        for iTry in range(self.tryings):
             logger.info(u("list(%s): %s") % (iTry, href))
             folders = None
             files = None
@@ -246,11 +244,10 @@ class DavPy(object):
                         e = sys.exc_info()[1]
                         logger.exception(e)
                 return folders, files
-            except ConnectionException:
-                raise
-            except Exception:
-                e = sys.exc_info()[1]
-                logger.exception(e)
+            except:
+                if iTry == self.tryings:
+                    raise
+
             return folders, files
 
     def sync(self, localpath, href, exclude=None, block=True):
@@ -305,11 +302,9 @@ class DavPy(object):
                         lambda localpath, href: self.sync(localpath, href, exclude, False),
                         [(localFolderPath, remoteFolderPath), ]
                     )
-        except ConnectionException:
+        except:
             raise
-        except Exception:
-            e = sys.exc_info()[1]
-            logger.exception(e)
+
         if block:
             qWork.join()
 
@@ -319,7 +314,7 @@ class DavPy(object):
         :param href: remote path
         :return: response
         """
-        for iTry in range(TRYINGS):
+        for iTry in range(self.tryings):
             logger.info(u("mkdir(%s): %s") % (iTry, href))
             try:
                 href = remote(href)
@@ -329,11 +324,9 @@ class DavPy(object):
                 response = conn.getresponse()
                 checkResponse(response)
                 return response.read()
-            except ConnectionException:
-                raise
-            except Exception:
-                e = sys.exc_info()[1]
-                logger.exception(e)
+            except:
+                if iTry == self.tryings:
+                    raise
 
     def download(self, href):
         """
@@ -341,7 +334,7 @@ class DavPy(object):
         :param href: remote path
         :return: file responce
         """
-        for iTry in range(TRYINGS):
+        for iTry in range(self.tryings):
             try:
                 logger.info(u("download(%s): %s") % (iTry, href))
                 href = remote(href)
@@ -355,11 +348,9 @@ class DavPy(object):
                     return b("")
                 else:
                     return data
-            except ConnectionException:
-                raise
-            except Exception:
-                e = sys.exc_info()[1]
-                logger.exception(e)
+            except:
+                if iTry == self.tryings:
+                    raise
 
     def downloadTo(self, href, localpath):
         """
@@ -368,7 +359,7 @@ class DavPy(object):
         :param localpath: local path
         :return: response
         """
-        for iTry in range(TRYINGS):
+        for iTry in range(self.tryings):
             logger.info(u("downloadTo(%s): %s %s") % (iTry, href, localpath))
             try:
                 href = remote(href)
@@ -394,11 +385,9 @@ class DavPy(object):
                     if f:
                         f.close()
                 return True
-            except ConnectionException:
-                raise
-            except Exception:
-                e = sys.exc_info()[1]
-                logger.exception(e)
+            except:
+                if iTry == self.tryings:
+                    raise
 
     def delete(self, href):
         """
@@ -406,7 +395,7 @@ class DavPy(object):
         :param href: remote path
         :return: response
         """
-        for iTry in range(TRYINGS):
+        for iTry in range(self.tryings):
             logger.info(u("delete(%s): %s") % (iTry, href))
             try:
                 href = remote(href)
@@ -416,37 +405,30 @@ class DavPy(object):
                 response = conn.getresponse()
                 checkResponse(response)
                 return response.read()
-            except ConnectionException:
-                logger.error("Cannot delete {}".format(href))
-            except Exception:
-                e = sys.exc_info()[1]
-                logger.exception(e)
+            except:
+                if iTry == self.tryings:
+                    raise
 
-    def write(self, f, href, length=None):
+    def __write(self, f, href, length=None):
         logger.info(u("write: %s") % href)
         href = remote(href)
         href = os.path.join(u("/"), href)
-        try:
-            conn = self.getConnection()
-            headers = self.getHeaders()
-            headers.update({
+
+        conn = self.getConnection()
+        headers = self.getHeaders()
+        headers.update({
                 "Content-Type": "application/binary",
                 "Expect": "100-continue"
-            })
-            if length:
-                headers["Content-Length"] = length
-            href = _encode_utf8(href)
-            quoted_href = quote(_encode_utf8(href))
-            conn.request("PUT", quoted_href, f, headers)
-            response = conn.getresponse()
-            checkResponse(response)
-            data = response.read()
-            return data
-        except ConnectionException:
-            raise
-        except Exception:
-            e = sys.exc_info()[1]
-            logger.exception(e)
+                })
+        if length:
+            headers["Content-Length"] = length
+        href = _encode_utf8(href)
+        quoted_href = quote(_encode_utf8(href))
+        conn.request("PUT", quoted_href, f, headers)
+        response = conn.getresponse()
+        checkResponse(response)
+        data = response.read()
+        return data        
 
     def upload(self, localpath, href):
         """
@@ -463,7 +445,7 @@ class DavPy(object):
         if os.path.islink(localpath):
             return self.upload(os.path.abspath(os.path.realpath(localpath)), href)
             # 3 tryings to upload file
-        for iTry in range(TRYINGS):
+        for iTry in range(self.tryings):
             try:
                 logger.info(u("upload: %s %s") % (localpath, href))
                 length = os.path.getsize(localpath)
@@ -473,13 +455,11 @@ class DavPy(object):
                 else:
                     _open = open(_encode_utf8(localpath), "r")
                 with _open as f:
-                    return self.write(f, href, length=length)
-            except ConnectionException:
-                raise
-            except Exception:
-                e = sys.exc_info()[1]
-                logger.exception(e)
-
+                    return self.__write(f, href, length=length)
+            except:
+                if iTry == self.tryings:
+                    raise
+            
     def exists(self, href):
         """
         Check if the folder exists
