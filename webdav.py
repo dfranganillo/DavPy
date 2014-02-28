@@ -479,5 +479,12 @@ class DavPy(object):
             return False
         return True
 
+    def searchFile(self, fname):
+        """
+        Search for a given file name
+        :param fname: The file name to search
+        """
+        pass
+
 if __name__ == "__main__":
     pass
