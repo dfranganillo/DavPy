@@ -245,7 +245,7 @@ class DavPy(object):
                         logger.exception(e)
                 return folders, files
             except:
-                if iTry == self.tryings:
+                if iTry == self.tryings - 1:
                     raise
 
             return folders, files
@@ -325,7 +325,7 @@ class DavPy(object):
                 checkResponse(response)
                 return response.read()
             except:
-                if iTry == self.tryings:
+                if iTry == self.tryings - 1:
                     raise
 
     def download(self, href):
@@ -349,7 +349,7 @@ class DavPy(object):
                 else:
                     return data
             except:
-                if iTry == self.tryings:
+                if iTry == self.tryings - 1:
                     raise
 
     def downloadTo(self, href, localpath):
@@ -386,7 +386,7 @@ class DavPy(object):
                         f.close()
                 return True
             except:
-                if iTry == self.tryings:
+                if iTry == self.tryings - 1:
                     raise
 
     def delete(self, href):
@@ -406,7 +406,7 @@ class DavPy(object):
                 checkResponse(response)
                 return response.read()
             except:
-                if iTry == self.tryings:
+                if iTry == self.tryings - 1:
                     raise
 
     def __write(self, f, href, length=None):
@@ -457,7 +457,7 @@ class DavPy(object):
                 with _open as f:
                     return self.__write(f, href, length=length)
             except:
-                if iTry == self.tryings:
+                if iTry == self.tryings - 1:
                     raise
             
     def exists(self, href):
