@@ -365,6 +365,9 @@ class DavPy(object):
                 href = remote(href)
                 localpath = _(localpath)
                 localDir = os.path.dirname(localpath)
+                if not localDir:
+                    localDir = "./"
+
                 conn = self.getConnection()
                 quoted_href = quote(_encode_utf8(href))
                 conn.request("GET", quoted_href, "", self.getHeaders())
@@ -373,13 +376,14 @@ class DavPy(object):
                 f = None
                 try:
                     while True:
-                        data = response.read(4096)
-                        if not data:
-                            break
                         if not f:
                             if not (os.path.exists(localDir)):
                                 os.makedirs(localDir)
                             f = open(localpath, "w")
+
+                        data = response.read(4096)
+                        if not data:
+                            break
                         f.write(data)
                 finally:
                     if f:
