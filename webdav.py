@@ -479,12 +479,28 @@ class DavPy(object):
             return False
         return True
 
-    def searchFile(self, fname):
+    def _searchFile(self, entries, fname):
+        folders, files = entries
+        
+        for f in folders:
+            r = self._searchFile(folders[f].list(), fname)
+            if r: return r
+        
+        for f in files:
+            if files[f].name == fname:
+                return files[f].href
+            
+    def searchFile(self, href, fname):
         """
         Search for a given file name
+        :param href: The path in which to start the search
         :param fname: The file name to search
         """
-        pass
+        r = self._searchFile(self.list(href), fname)
+        if not r:
+            r = ""
+
+        return r
 
 if __name__ == "__main__":
     pass
