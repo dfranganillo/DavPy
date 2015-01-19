@@ -3,6 +3,7 @@
 
 import os
 import sys
+import ssl
 import threading
 import logging
 import base64
@@ -186,6 +187,7 @@ class DavPy(object):
         self.options = opts
         self.limit = opts.get("limit", 4)
         self.tryings = max(1, opts.get("retry_limit",3))
+        self.ssl_verify=opts.get("ssl_verify", True)
 
     def getHeaders(self):
         """
@@ -204,7 +206,10 @@ class DavPy(object):
         Get connection
         :return: connection http_client.HTTPSConnection
         """
-        return http_client.HTTPSConnection(self.host)
+        if self.ssl_verify:
+            return http_client.HTTPSConnection(self.host)
+        
+        return http_client.HTTPSConnection(self.host, context=ssl._create_unverified_context())
 
     def list(self, href):
         """
