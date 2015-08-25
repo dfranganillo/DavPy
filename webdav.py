@@ -248,6 +248,7 @@ class DavPy(object):
                     except xml.parsers.expat.ExpatError:
                         e = sys.exc_info()[1]
                         logger.exception(e)
+
                 return folders, files
             except:
                 if iTry == self.tryings - 1:
@@ -486,15 +487,18 @@ class DavPy(object):
 
     def _searchFile(self, entries, fname):
         folders, files = entries
-        
+
         for f in folders:
             r = self._searchFile(folders[f].list(), fname)
             if r: return r
-        
+
         for f in files:
-            if files[f].name == fname:
+            name = files[f].name
+            if name=="":
+                name = os.path.basename(files[f].href)
+            if name == fname:
                 return files[f].href
-            
+
     def searchFile(self, href, fname):
         """
         Search for a given file name
