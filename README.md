@@ -6,13 +6,7 @@ Compatible python 2.6, 2.7, 3
 
 # Install
 
-> [pip](https://pypi.python.org/pypi/pip/) install [davpy](https://pypi.python.org/pypi/davpy)
-
-Or
-
-> [easy_install](https://pypi.python.org/pypi/setuptools) [davpy](https://pypi.python.org/pypi/davpy)
-
-Or manual way
+Manual way
 
 > python setup.py install
 
