@@ -7,13 +7,7 @@ Simple wrapper to work with Basic Auth webdavs. Compatible python 2.6,
 Install
 =======
 
-    `pip`_ install `davpy`_
-
-Or
-
-    `easy\_install`_ `davpy`_
-
-Or manual way
+Manual way
 
     python setup.py install
 
@@ -41,7 +35,4 @@ Using API
 
     davfs.upload(u"path to local file", u"remote path for uploading file")
 
-.. _pip: https://pypi.python.org/pypi/pip/
-.. _davpy: https://pypi.python.org/pypi/davpy
-.. _easy\_install: https://pypi.python.org/pypi/setuptools
 .. _github: https://github.com/dfranganillo/davpy
