@@ -188,6 +188,8 @@ class DavPy(object):
         self.limit = opts.get("limit", 4)
         self.tryings = max(1, opts.get("retry_limit",3))
         self.ssl_verify=opts.get("ssl_verify", True)
+        self.proxy_server = opts.get("https_proxy", "")
+        self.proxy_port = opts.get("https_proxy_port", 0)
 
     def getHeaders(self):
         """
@@ -206,6 +208,12 @@ class DavPy(object):
         Get connection
         :return: connection http_client.HTTPSConnection
         """
+        # Handle http tunneling
+        if self.proxy_server :
+            conn = http_client.HTTPSConnection(self.proxy_server, self.proxy_port)
+            conn.set_tunnel(self.host)
+            return conn
+
         if self.ssl_verify:
             return http_client.HTTPSConnection(self.host)
         
