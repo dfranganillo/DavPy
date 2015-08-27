@@ -190,6 +190,8 @@ class DavPy(object):
         self.ssl_verify=opts.get("ssl_verify", True)
         self.proxy_server = opts.get("https_proxy", "")
         self.proxy_port = opts.get("https_proxy_port", 0)
+        self.proxy_username = opts.get("https_proxy_username","")
+        self.proxy_password = opts.get("https_proxy_password","")
 
     def getHeaders(self):
         """
@@ -197,6 +199,7 @@ class DavPy(object):
         :return:
         """
         basicauth = base64.encodestring(b(self.user + ':' + self.password)).strip()
+
         return {
             "Depth": "1",
             "Authorization": 'Basic ' + _decode_utf8(basicauth),
@@ -210,8 +213,13 @@ class DavPy(object):
         """
         # Handle http tunneling
         if self.proxy_server :
+            auth=""
+            if self.proxy_username:
+                authstr = base64.encodestring(b(self.proxy_username + ':' + self.proxy_password)).strip()
+                auth = {"Proxy-authorization": 'Basic {auth}'.format(auth=authstr)}
+
             conn = http_client.HTTPSConnection(self.proxy_server, self.proxy_port)
-            conn.set_tunnel(self.host)
+            conn.set_tunnel(self.host, headers=auth)
             return conn
 
         if self.ssl_verify:
@@ -234,6 +242,7 @@ class DavPy(object):
                 conn = self.getConnection()
                 conn.request("PROPFIND", _encode_utf8(href), u(""), self.getHeaders())
                 response = conn.getresponse()
+
                 checkResponse(response)
                 data = response.read()
                 if data == b('list: folder was not found'):
