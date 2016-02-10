@@ -14,7 +14,7 @@ README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 
 setup(
     name='davpy',
-    version='1.0',
+    version='1.0.1',
     include_package_data=True,
     py_modules=['davpy'],
     url='https://github.com/dfranganillo/davpy',
