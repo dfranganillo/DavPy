@@ -14,7 +14,7 @@ README = open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
 
 setup(
     name='davpy',
-    version='0.2.12',
+    version='1.0',
     include_package_data=True,
     py_modules=['davpy'],
     url='https://github.com/dfranganillo/davpy',
@@ -23,8 +23,5 @@ setup(
     author_email='lexich121@gmail.com, dfranganillo@gmail.com',
     description='Simple wrapper to work with Basic Auth webdavs',
     long_description=README,
-    install_requires=install_requires,
-    scripts=[
-        "ydw.py"
-    ]
+    install_requires=install_requires
 )
