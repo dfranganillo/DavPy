@@ -201,7 +201,7 @@ class DavPy(object):
         basicauth = base64.encodestring(b(self.user + ':' + self.password)).strip()
 
         return {
-            "Depth": "1",
+            "Depth": "0",
             "Authorization": 'Basic ' + _decode_utf8(basicauth),
             "Accept": "*/*"
         }
@@ -224,7 +224,7 @@ class DavPy(object):
 
         if self.ssl_verify:
             return http_client.HTTPSConnection(self.host)
-        
+
         return http_client.HTTPSConnection(self.host, context=ssl._create_unverified_context())
 
     def list(self, href):
@@ -240,7 +240,9 @@ class DavPy(object):
             try:
                 href = os.path.join(u("/"), _(href))
                 conn = self.getConnection()
-                conn.request("PROPFIND", _encode_utf8(href), u(""), self.getHeaders())
+                hdr = self.getHeaders()
+                hdr["Depth"] = 1
+                conn.request("PROPFIND", _encode_utf8(href), u(""), hdr)
                 response = conn.getresponse()
 
                 checkResponse(response)
@@ -455,7 +457,7 @@ class DavPy(object):
         response = conn.getresponse()
         checkResponse(response)
         data = response.read()
-        return data        
+        return data
 
     def upload(self, localpath, href):
         """
@@ -486,12 +488,13 @@ class DavPy(object):
             except:
                 if iTry == self.tryings - 1:
                     raise
-            
+
     def exists(self, href):
         """
         Check if the folder exists
         :param href: The remote path
         """
+        logger.info(u("exists: %s") % href)
         href = os.path.join(u("/"), _(href))
         conn = self.getConnection()
         conn.request("PROPFIND", _encode_utf8(href), u(""), self.getHeaders())
