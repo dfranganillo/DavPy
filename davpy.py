@@ -234,7 +234,7 @@ class DavPy(object):
         :return: list(folders, files) and list(None,None) if folder doesn't exist
         """
         for iTry in range(self.tryings):
-            logger.info(u("list(%s): %s") % (iTry, href))
+            logger.debug(u("list(%s): %s") % (iTry, href))
             folders = None
             files = None
             try:
@@ -283,7 +283,7 @@ class DavPy(object):
         :param exclude: filter folder which need to exlude
         :return: respose
         """
-        logger.info(u("sync: %s %s") % (localpath, href))
+        logger.debug(u("sync: %s %s") % (localpath, href))
         try:
             localpath = _(localpath)
             href = remote(href)
@@ -340,7 +340,7 @@ class DavPy(object):
         :return: response
         """
         for iTry in range(self.tryings):
-            logger.info(u("mkdir(%s): %s") % (iTry, href))
+            logger.debug(u("mkdir(%s): %s") % (iTry, href))
             try:
                 href = remote(href)
                 conn = self.getConnection()
@@ -361,7 +361,7 @@ class DavPy(object):
         """
         for iTry in range(self.tryings):
             try:
-                logger.info(u("download(%s): %s") % (iTry, href))
+                logger.debug(u("download(%s): %s") % (iTry, href))
                 href = remote(href)
                 conn = self.getConnection()
                 quoted_href = quote(_encode_utf8(href))
@@ -385,7 +385,7 @@ class DavPy(object):
         :return: response
         """
         for iTry in range(self.tryings):
-            logger.info(u("downloadTo(%s): %s %s") % (iTry, href, localpath))
+            logger.debug(u("downloadTo(%s): %s %s") % (iTry, href, localpath))
             try:
                 href = remote(href)
                 localpath = _(localpath)
@@ -425,7 +425,7 @@ class DavPy(object):
         :return: response
         """
         for iTry in range(self.tryings):
-            logger.info(u("delete(%s): %s") % (iTry, href))
+            logger.debug(u("delete(%s): %s") % (iTry, href))
             try:
                 href = remote(href)
                 conn = self.getConnection()
@@ -439,7 +439,7 @@ class DavPy(object):
                     raise
 
     def __write(self, f, href, length=None):
-        logger.info(u("write: %s") % href)
+        logger.debug(u("write: %s") % href)
         href = remote(href)
         href = os.path.join(u("/"), href)
 
@@ -469,14 +469,14 @@ class DavPy(object):
         localpath = _(localpath)
         href = remote(href)
         if not os.path.exists(localpath):
-            logger.info(u("ERROR: localfile: %s not found") % localpath)
+            logger.error(u("ERROR: localfile: %s not found") % localpath)
             return
         if os.path.islink(localpath):
             return self.upload(os.path.abspath(os.path.realpath(localpath)), href)
             # 3 tryings to upload file
         for iTry in range(self.tryings):
             try:
-                logger.info(u("upload: %s %s") % (localpath, href))
+                logger.debug(u("upload: %s %s") % (localpath, href))
                 length = os.path.getsize(localpath)
 
                 if PY3:
@@ -494,7 +494,7 @@ class DavPy(object):
         Check if the folder exists
         :param href: The remote path
         """
-        logger.info(u("exists: %s") % href)
+        logger.debug(u("exists: %s") % href)
         href = os.path.join(u("/"), _(href))
         conn = self.getConnection()
         conn.request("PROPFIND", _encode_utf8(href), u(""), self.getHeaders())
